@@ -4,7 +4,9 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "node --watch src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "migrate": "node src/scripts/migrate.js",
+    "seed": "node src/scripts/seed.js"
   },
   "keywords": [],
   "author": "",
