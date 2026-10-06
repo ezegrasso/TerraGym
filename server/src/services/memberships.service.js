@@ -1,0 +1,191 @@
+import { pool } from '../config/db.js'
+import { AppError } from '../utils/AppError.js'
+import { addDays, membershipEnd, todayAR } from '../utils/dates.js'
+import * as paymentsService from './payments.service.js'
+
+// Los estados se calculan con la fecha de hoy (Argentina) que se pasa como :today.
+// Nunca se usa CURDATE(): el servidor de producción corre en UTC.
+const INNER = `(
+  SELECT m.id, m.user_id, m.start_date, m.end_date, m.price, m.created_at,
+         u.first_name, u.last_name, u.email, u.dni, u.phone,
+         p.id AS plan_id, p.name AS plan_name, p.days_per_week,
+         COALESCE(pay.paid, 0) AS paid,
+         CASE
+           WHEN m.status = 'CANCELADA' THEN 'CANCELADA'
+           WHEN m.end_date < :today THEN 'VENCIDA'
+           WHEN m.start_date > :today THEN 'PROGRAMADA'
+           WHEN DATEDIFF(m.end_date, :today) <= 7 THEN 'POR_VENCER'
+           ELSE 'VIGENTE'
+         END AS status,
+         CASE
+           WHEN COALESCE(pay.paid, 0) >= m.price THEN 'PAGADA'
+           WHEN COALESCE(pay.paid, 0) > 0 THEN 'PARCIAL'
+           ELSE 'PENDIENTE'
+         END AS payment_status
+  FROM memberships m
+  JOIN users u ON u.id = m.user_id
+  JOIN membership_plans p ON p.id = m.plan_id
+  LEFT JOIN (
+    SELECT membership_id, SUM(amount) AS paid
+    FROM payments WHERE voided_at IS NULL GROUP BY membership_id
+  ) pay ON pay.membership_id = m.id
+) t`
+
+function toDto(r) {
+    return {
+        id: r.id,
+        userId: r.user_id,
+        member: {
+            id: r.user_id,
+            firstName: r.first_name,
+            lastName: r.last_name,
+            email: r.email,
+            dni: r.dni,
+            phone: r.phone,
+        },
+        plan: { id: r.plan_id, name: r.plan_name, daysPerWeek: r.days_per_week },
+        startDate: r.start_date,
+        endDate: r.end_date,
+        price: r.price,
+        paid: r.paid,
+        balance: Math.round((r.price - r.paid) * 100) / 100,
+        status: r.status,
+        paymentStatus: r.payment_status,
+        createdAt: r.created_at,
+    }
+}
+
+async function select(whereSql, params, tail = '') {
+    const [rows] = await pool.query(`SELECT * FROM ${INNER} ${whereSql} ${tail}`, {
+        today: todayAR(),
+        ...params,
+    })
+    return rows.map(toDto)
+}
+
+async function withPayments(items) {
+    const map = await paymentsService.listByMembershipIds(items.map((i) => i.id))
+    return items.map((i) => ({ ...i, payments: map.get(i.id) ?? [] }))
+}
+
+export async function list({ status, paymentStatus, userId, search, page, limit }) {
+    const where = []
+    const params = { limit, offset: (page - 1) * limit }
+    if (status) {
+        where.push('t.status = :status')
+        params.status = status
+    }
+    if (paymentStatus) {
+        where.push('t.payment_status = :paymentStatus')
+        params.paymentStatus = paymentStatus
+    }
+    if (userId) {
+        where.push('t.user_id = :userId')
+        params.userId = userId
+    }
+    if (search) {
+        where.push(
+            `(t.first_name LIKE :q OR t.last_name LIKE :q OR t.dni LIKE :q
+        OR CONCAT(t.first_name, ' ', t.last_name) LIKE :q)`,
+        )
+        params.q = `%${search}%`
+    }
+    const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : ''
+
+    const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM ${INNER} ${whereSql}`, {
+        today: todayAR(),
+        ...params,
+    })
+    const items = await select(
+        whereSql,
+        params,
+        'ORDER BY t.end_date DESC, t.id DESC LIMIT :limit OFFSET :offset',
+    )
+    return { items, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } }
+}
+
+export async function getById(id) {
+    const [item] = await select('WHERE t.id = :id', { id })
+    if (!item) throw new AppError('Membresía no encontrada', 404, 'NOT_FOUND')
+    return (await withPayments([item]))[0]
+}
+
+// Membresías propias del socio, con su historial de pagos
+export async function listForMember(userId) {
+    const items = await select('WHERE t.user_id = :userId', { userId }, 'ORDER BY t.start_date DESC LIMIT 24')
+    return withPayments(items)
+}
+
+export async function create({ userId, planId, payment }, actingUserId) {
+    const conn = await pool.getConnection()
+    try {
+        await conn.beginTransaction()
+
+        // Bloquea al socio: dos altas simultáneas no pueden pisarse las fechas
+        const [users] = await conn.query(
+            'SELECT id, role, is_active FROM users WHERE id = :id FOR UPDATE',
+            { id: userId },
+        )
+        const user = users[0]
+        if (!user) throw new AppError('Socio no encontrado', 404, 'NOT_FOUND')
+        if (user.role !== 'USUARIO') {
+            throw new AppError('Solo los socios pueden tener membresía', 400, 'NOT_A_MEMBER')
+        }
+        if (!user.is_active) {
+            throw new AppError('El socio está inactivo. Activalo antes de crear una membresía', 400, 'USER_INACTIVE')
+        }
+
+        const [plans] = await conn.query(
+            'SELECT id, price, duration_months, is_active FROM membership_plans WHERE id = :id',
+            { id: planId },
+        )
+        const plan = plans[0]
+        if (!plan) throw new AppError('Plan no encontrado', 404, 'NOT_FOUND')
+        if (!plan.is_active) throw new AppError('Ese plan está desactivado', 400, 'PLAN_INACTIVE')
+
+        if (payment && Math.round(payment.amount * 100) > Math.round(plan.price * 100)) {
+            throw new AppError('El pago inicial supera el precio del plan', 400, 'OVERPAYMENT')
+        }
+
+        // Renovación: empieza al día siguiente de la última membresía vigente o programada
+        const today = todayAR()
+        const [[{ last_end }]] = await conn.query(
+            `SELECT MAX(end_date) AS last_end FROM memberships
+       WHERE user_id = :userId AND status = 'ACTIVA' AND end_date >= :today`,
+            { userId, today },
+        )
+        const startDate = last_end ? addDays(last_end, 1) : today
+        const endDate = membershipEnd(startDate, plan.duration_months)
+
+        const [result] = await conn.query(
+            `INSERT INTO memberships (user_id, plan_id, start_date, end_date, price, created_by)
+       VALUES (:userId, :planId, :startDate, :endDate, :price, :createdBy)`,
+            { userId, planId, startDate, endDate, price: plan.price, createdBy: actingUserId },
+        )
+
+        if (payment) {
+            await paymentsService.insertPayment(conn, {
+                ...payment,
+                membershipId: result.insertId,
+                registeredBy: actingUserId,
+            })
+        }
+
+        await conn.commit()
+        return getById(result.insertId)
+    } catch (err) {
+        await conn.rollback()
+        throw err
+    } finally {
+        conn.release()
+    }
+}
+
+export async function cancel(id) {
+    const membership = await getById(id)
+    if (membership.status === 'CANCELADA') {
+        throw new AppError('La membresía ya estaba cancelada', 409, 'ALREADY_CANCELLED')
+    }
+    await pool.query("UPDATE memberships SET status = 'CANCELADA' WHERE id = :id", { id })
+    return getById(id)
+}

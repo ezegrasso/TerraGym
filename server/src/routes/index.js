@@ -4,6 +4,9 @@ import { sendSuccess } from '../utils/response.js'
 import authRoutes from './auth.routes.js'
 import usersRoutes from './users.routes.js'
 import trainersRoutes from './trainers.routes.js'
+import membershipPlansRoutes from './membershipPlans.routes.js'
+import membershipsRoutes from './memberships.routes.js'
+import paymentsRoutes from './payments.routes.js'
 
 const router = Router()
 
@@ -19,5 +22,7 @@ router.get('/health', async (req, res, next) => {
 router.use('/auth', authRoutes)
 router.use('/users', usersRoutes)
 router.use('/trainers', trainersRoutes)
-
+router.use('/membership-plans', membershipPlansRoutes)
+router.use('/memberships', membershipsRoutes)
+router.use('/payments', paymentsRoutes)
 export default router
