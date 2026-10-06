@@ -41,3 +41,13 @@ export const requireRole =
             }
             next()
         }
+// Bloquea la API si el usuario aún debe cambiar su contraseña temporal.
+// Se aplica a todo menos a /auth (login, me, change-password, logout).
+export function requirePasswordChanged(req, res, next) {
+    if (req.user?.must_change_password) {
+        return next(
+            new AppError('Debés cambiar tu contraseña antes de continuar', 403, 'PASSWORD_CHANGE_REQUIRED'),
+        )
+    }
+    next()
+}

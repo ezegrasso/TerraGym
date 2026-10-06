@@ -2,6 +2,8 @@ import { Router } from 'express'
 import { pool } from '../config/db.js'
 import { sendSuccess } from '../utils/response.js'
 import authRoutes from './auth.routes.js'
+import usersRoutes from './users.routes.js'
+import trainersRoutes from './trainers.routes.js'
 
 const router = Router()
 
@@ -15,5 +17,7 @@ router.get('/health', async (req, res, next) => {
     }
 })
 router.use('/auth', authRoutes)
+router.use('/users', usersRoutes)
+router.use('/trainers', trainersRoutes)
 
 export default router
