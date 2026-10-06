@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { pool } from '../config/db.js'
 import { sendSuccess } from '../utils/response.js'
+import authRoutes from './auth.routes.js'
 
 const router = Router()
 
@@ -13,5 +14,6 @@ router.get('/health', async (req, res, next) => {
         next(err)
     }
 })
+router.use('/auth', authRoutes)
 
 export default router
