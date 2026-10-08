@@ -30,6 +30,29 @@ const INNER = `(
     FROM payments WHERE voided_at IS NULL GROUP BY membership_id
   ) pay ON pay.membership_id = m.id
 ) t`
+// Con current=true devuelve una sola membresía por socio (la "actual").
+// Prioridad: en curso > próxima programada > última vencida > cancelada.
+function source(current) {
+    if (!current) return INNER
+    return `(
+    SELECT x.* FROM (
+      SELECT t.*, ROW_NUMBER() OVER (
+        PARTITION BY t.user_id
+        ORDER BY
+          CASE
+            WHEN t.status IN ('VIGENTE', 'POR_VENCER') THEN 1
+            WHEN t.status = 'PROGRAMADA' THEN 2
+            WHEN t.status = 'VENCIDA' THEN 3
+            ELSE 4
+          END,
+          CASE WHEN t.status = 'PROGRAMADA' THEN t.start_date END ASC,
+          t.end_date DESC,
+          t.id DESC
+      ) AS rn
+      FROM ${INNER}
+    ) x WHERE x.rn = 1
+  ) t`
+}
 
 function toDto(r) {
     return {
@@ -55,8 +78,8 @@ function toDto(r) {
     }
 }
 
-async function select(whereSql, params, tail = '') {
-    const [rows] = await pool.query(`SELECT * FROM ${INNER} ${whereSql} ${tail}`, {
+async function select(whereSql, params, tail = '', src = INNER) {
+    const [rows] = await pool.query(`SELECT * FROM ${src} ${whereSql} ${tail}`, {
         today: todayAR(),
         ...params,
     })
@@ -68,7 +91,7 @@ async function withPayments(items) {
     return items.map((i) => ({ ...i, payments: map.get(i.id) ?? [] }))
 }
 
-export async function list({ status, paymentStatus, userId, search, page, limit }) {
+export async function list({ status, paymentStatus, userId, search, current, page, limit }) {
     const where = []
     const params = { limit, offset: (page - 1) * limit }
     if (status) {
@@ -91,19 +114,20 @@ export async function list({ status, paymentStatus, userId, search, page, limit 
         params.q = `%${search}%`
     }
     const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : ''
+    const src = source(current)
 
-    const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM ${INNER} ${whereSql}`, {
+    const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM ${src} ${whereSql}`, {
         today: todayAR(),
         ...params,
     })
-    const items = await select(
-        whereSql,
-        params,
-        'ORDER BY t.end_date DESC, t.id DESC LIMIT :limit OFFSET :offset',
-    )
+
+    const order = current
+        ? 'ORDER BY t.last_name, t.first_name, t.id'
+        : 'ORDER BY t.end_date DESC, t.id DESC'
+    const items = await select(whereSql, params, `${order} LIMIT :limit OFFSET :offset`, src)
+
     return { items, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } }
 }
-
 export async function getById(id) {
     const [item] = await select('WHERE t.id = :id', { id })
     if (!item) throw new AppError('Membresía no encontrada', 404, 'NOT_FOUND')
@@ -116,7 +140,7 @@ export async function listForMember(userId) {
     return withPayments(items)
 }
 
-export async function create({ userId, planId, payment }, actingUserId) {
+export async function create({ userId, planId, payment, confirmRenewal }, actingUserId) {
     const conn = await pool.getConnection()
     try {
         await conn.beginTransaction()
@@ -149,6 +173,20 @@ export async function create({ userId, planId, payment }, actingUserId) {
 
         // Renovación: empieza al día siguiente de la última membresía vigente o programada
         const today = todayAR()
+        // Aviso: ya tiene una renovación programada. Hay que confirmar explícitamente.
+        const [[{ scheduled, next_start }]] = await conn.query(
+            `SELECT COUNT(*) AS scheduled, MIN(start_date) AS next_start FROM memberships
+       WHERE user_id = :userId AND status = 'ACTIVA' AND start_date > :today`,
+            { userId, today },
+        )
+        if (scheduled > 0 && !confirmRenewal) {
+            throw new AppError(
+                'Este socio ya tiene una renovación programada.',
+                409,
+                'ALREADY_SCHEDULED',
+                { nextStartDate: next_start },
+            )
+        }
         const [[{ last_end }]] = await conn.query(
             `SELECT MAX(end_date) AS last_end FROM memberships
        WHERE user_id = :userId AND status = 'ACTIVA' AND end_date >= :today`,

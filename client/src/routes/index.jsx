@@ -10,6 +10,8 @@ import ProtectedRoute from './ProtectedRoute'
 import RoleRoute from './RoleRoute'
 import MembersPage from '@/pages/admin/MembersPage'
 import TrainersPage from '@/pages/admin/TrainersPage'
+import MembershipsPage from '@/pages/admin/MembershipsPage'
+import PlansPage from '@/pages/admin/PlansPage'
 
 // "/" manda a cada usuario a su inicio, o al login si no hay sesión
 function RootRedirect() {
@@ -32,6 +34,8 @@ export default function AppRoutes() {
                         <Route path="/admin" element={<HomePage />} />
                         <Route path="/admin/socios" element={<MembersPage />} />
                         <Route path="/admin/profesores" element={<TrainersPage />} />
+                        <Route path="/admin/membresias" element={<MembershipsPage />} />
+                        <Route path="/admin/planes" element={<PlansPage />} />
                     </Route>
                     <Route element={<RoleRoute roles={[ROLES.PROFESOR]} />}>
                         <Route path="/profesor" element={<HomePage />} />

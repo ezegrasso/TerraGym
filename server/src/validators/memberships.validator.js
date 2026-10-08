@@ -59,9 +59,10 @@ export const createMembershipSchema = z.object({
     userId: z.number().int().positive(),
     planId: z.number().int().positive(),
     payment: z.object(paymentFields).optional(), // pago inicial opcional (puede ser parcial)
+    confirmRenewal: z.boolean().optional(), // confirma crear otra aunque ya haya una programada
 })
-
 export const listMembershipsQuery = z.object({
+    current: z.enum(['true', 'false']).optional().transform((v) => v === 'true'),
     status: z.enum(['PROGRAMADA', 'VIGENTE', 'POR_VENCER', 'VENCIDA', 'CANCELADA']).optional(),
     paymentStatus: z.enum(['PENDIENTE', 'PARCIAL', 'PAGADA']).optional(),
     userId: z.coerce.number().int().positive().optional(),
