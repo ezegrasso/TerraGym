@@ -15,6 +15,8 @@ import PlansPage from '@/pages/admin/PlansPage'
 import PaymentsPage from '@/pages/admin/PaymentsPage'
 import MyMembershipPage from '@/pages/member/MyMembershipPage'
 import ExercisesPage from '@/pages/ExercisesPage'
+import TemplateEditorPage from '@/pages/TemplateEditorPage'
+import TemplatesPage from '@/pages/TemplatesPage'
 
 // "/" manda a cada usuario a su inicio, o al login si no hay sesión
 function RootRedirect() {
@@ -51,6 +53,9 @@ export default function AppRoutes() {
                     </Route>
                     <Route element={<RoleRoute roles={[ROLES.ADMIN, ROLES.PROFESOR]} />}>
                         <Route path="/ejercicios" element={<ExercisesPage />} />
+                        <Route path="/plantillas" element={<TemplatesPage />} />
+                        <Route path="/plantillas/nueva" element={<TemplateEditorPage />} />
+                        <Route path="/plantillas/:id" element={<TemplateEditorPage />} />
                     </Route>
                 </Route>
 

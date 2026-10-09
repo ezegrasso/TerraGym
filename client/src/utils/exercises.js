@@ -25,3 +25,12 @@ export function isValidVideoUrl(value) {
         return false
     }
 }
+export const BLOCKS = {
+    ENTRADA_EN_CALOR: 'Entrada en calor',
+    MOVILIDAD: 'Movilidad',
+    PRINCIPAL: 'Principal',
+    ACCESORIOS: 'Accesorios',
+    CORE: 'Core',
+    CARDIO: 'Cardio',
+    ENFRIAMIENTO: 'Enfriamiento',
+}

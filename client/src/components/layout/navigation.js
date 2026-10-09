@@ -1,4 +1,4 @@
-import { CreditCard, IdCard, LayoutDashboard, Receipt, Tags, UserCog, Users, Dumbbell } from 'lucide-react'
+import { CreditCard, IdCard, LayoutDashboard, Receipt, Tags, UserCog, Users, Dumbbell, ClipboardList } from 'lucide-react'
 
 export const NAV_BY_ROLE = {
     ADMIN: [
@@ -9,6 +9,7 @@ export const NAV_BY_ROLE = {
         { label: 'Pagos', to: '/admin/pagos', icon: Receipt },
         { label: 'Planes', to: '/admin/planes', icon: Tags },
         { label: 'Ejercicios', to: '/ejercicios', icon: Dumbbell },
+        { label: 'Plantillas', to: '/plantillas', icon: ClipboardList },
     ],
     PROFESOR: [{ label: 'Inicio', to: '/profesor', icon: LayoutDashboard }, { label: 'Ejercicios', to: '/ejercicios', icon: Dumbbell }],
     USUARIO: [

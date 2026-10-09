@@ -40,17 +40,17 @@ function toDefaults(exercise) {
     }
 }
 
-export default function ExerciseFormSheet({ open, onOpenChange, exercise }) {
+export default function ExerciseFormSheet({ open, onOpenChange, exercise, onSaved }) {
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent className="w-full overflow-y-auto sm:max-w-md">
-                <ExerciseForm exercise={exercise} onDone={() => onOpenChange(false)} />
+                <ExerciseForm exercise={exercise} onSaved={onSaved} onDone={() => onOpenChange(false)} />
             </SheetContent>
         </Sheet>
     )
 }
 
-function ExerciseForm({ exercise, onDone }) {
+function ExerciseForm({ exercise, onDone, onSaved }) {
     const isEdit = !!exercise
     const { create, update } = useExerciseMutations()
     const {
@@ -67,8 +67,9 @@ function ExerciseForm({ exercise, onDone }) {
                 await update.mutateAsync({ id: exercise.id, data: values })
                 toast.success('Ejercicio actualizado')
             } else {
-                await create.mutateAsync(values)
+                const created = await create.mutateAsync(values)
                 toast.success('Ejercicio creado')
+                onSaved?.(created)
             }
             onDone()
         } catch (error) {
