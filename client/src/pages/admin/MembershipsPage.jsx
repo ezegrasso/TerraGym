@@ -23,6 +23,8 @@ import { getErrorMessage } from '@/services/api'
 import { formatCurrency, formatDate } from '@/utils/format'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { Eye } from 'lucide-react'
+import MemberMembershipsSheet from '@/components/forms/MemberMembershipsSheet'
 
 const PAGE_SIZE = 10
 
@@ -72,7 +74,7 @@ function PaymentCell({ m }) {
     )
 }
 
-function RowActions({ membership, onRenew, onCancel }) {
+function RowActions({ membership, onRenew, onCancel, onDetail }) {
     const name = `${membership.member.firstName} ${membership.member.lastName}`
     return (
         <DropdownMenu>
@@ -82,6 +84,9 @@ function RowActions({ membership, onRenew, onCancel }) {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+                <DropdownMenuItem onSelect={() => onDetail(membership.member)}>
+                    <Eye aria-hidden="true" /> Ver detalles
+                </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => onRenew(membership.member)}>
                     <RefreshCw aria-hidden="true" /> Renovar
                 </DropdownMenuItem>
@@ -142,10 +147,11 @@ export default function MembershipsPage() {
             toast.error(getErrorMessage(error))
         }
     }
-
+    const [detailMember, setDetailMember] = useState(null)
     const actionsFor = (m) => (
-        <RowActions membership={m} onRenew={openCreate} onCancel={setToCancel} />
+        <RowActions membership={m} onDetail={setDetailMember} onRenew={openCreate} onCancel={setToCancel} />
     )
+
 
     const columns = [
         {
@@ -298,6 +304,7 @@ export default function MembershipsPage() {
                 onOpenChange={(open) => setSheet((s) => ({ ...s, open }))}
                 initialMember={sheet.member}
             />
+            <MemberMembershipsSheet member={detailMember} onClose={() => setDetailMember(null)} />
 
             <ConfirmDialog
                 open={!!toCancel}
@@ -311,4 +318,5 @@ export default function MembershipsPage() {
             />
         </>
     )
+
 }

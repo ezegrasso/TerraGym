@@ -23,15 +23,7 @@ import { formatCurrency, formatDate } from '@/utils/format'
 import FormField from './FormField'
 import MemberPicker from './MemberPicker'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
-
-
-export const PAYMENT_METHODS = {
-    EFECTIVO: 'Efectivo',
-    TRANSFERENCIA: 'Transferencia',
-    TARJETA: 'Tarjeta',
-    MERCADO_PAGO: 'Mercado Pago',
-    OTRO: 'Otro',
-}
+import { PAYMENT_METHODS } from '@/utils/payments'
 
 const schema = z.object({
     userId: z.number({ message: 'Elegí un socio' }),

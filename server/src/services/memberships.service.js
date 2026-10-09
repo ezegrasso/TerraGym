@@ -126,7 +126,9 @@ export async function list({ status, paymentStatus, userId, search, current, pag
         : 'ORDER BY t.end_date DESC, t.id DESC'
     const items = await select(whereSql, params, `${order} LIMIT :limit OFFSET :offset`, src)
 
-    return { items, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } }
+    // Con filtro por socio se incluyen los pagos de cada período (pantalla de detalle)
+    const result = userId ? await withPayments(items) : items
+    return { items: result, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } }
 }
 export async function getById(id) {
     const [item] = await select('WHERE t.id = :id', { id })

@@ -19,3 +19,6 @@ export function useMembershipMutations() {
         cancel: useMutation({ mutationFn: membershipsService.cancel, onSuccess: invalidate }),
     }
 }
+export function useMyMemberships() {
+    return useQuery({ queryKey: ['memberships', 'me'], queryFn: membershipsService.listMine })
+}
