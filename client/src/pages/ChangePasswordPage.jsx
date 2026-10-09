@@ -18,7 +18,7 @@ const schema = z
         currentPassword: z.string().min(1, 'Ingresá tu contraseña actual'),
         newPassword: z
             .string()
-            .min(8, 'Debe tener al menos 8 caracteres')
+            .min(4, 'Debe tener al menos 4 caracteres')
             .max(72, 'No puede superar los 72 caracteres'),
         confirmPassword: z.string().min(1, 'Repetí la nueva contraseña'),
     })

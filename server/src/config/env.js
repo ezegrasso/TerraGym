@@ -13,8 +13,7 @@ const schema = z.object({
     JWT_SECRET: z.string().min(32, 'JWT_SECRET debe tener al menos 32 caracteres'),
     JWT_EXPIRES_IN: z.string().default('7d'),
     ADMIN_EMAIL: z.string().email().optional(),
-    ADMIN_PASSWORD: z.string().min(8, 'ADMIN_PASSWORD debe tener al menos 8 caracteres').optional(),
-    ADMIN_FIRST_NAME: z.string().default('Admin'),
+    ADMIN_PASSWORD: z.string().min(4, 'ADMIN_PASSWORD debe tener al menos 4 caracteres').optional(),
     ADMIN_LAST_NAME: z.string().default('TerraGym'),
 })
 
