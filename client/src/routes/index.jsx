@@ -14,6 +14,7 @@ import MembershipsPage from '@/pages/admin/MembershipsPage'
 import PlansPage from '@/pages/admin/PlansPage'
 import PaymentsPage from '@/pages/admin/PaymentsPage'
 import MyMembershipPage from '@/pages/member/MyMembershipPage'
+import ExercisesPage from '@/pages/ExercisesPage'
 
 // "/" manda a cada usuario a su inicio, o al login si no hay sesión
 function RootRedirect() {
@@ -48,7 +49,11 @@ export default function AppRoutes() {
                         <Route path="/socio" element={<HomePage />} />
                         <Route path="/socio/membresia" element={<MyMembershipPage />} />
                     </Route>
+                    <Route element={<RoleRoute roles={[ROLES.ADMIN, ROLES.PROFESOR]} />}>
+                        <Route path="/ejercicios" element={<ExercisesPage />} />
+                    </Route>
                 </Route>
+
             </Route>
 
             <Route path="*" element={<NotFoundPage />} />

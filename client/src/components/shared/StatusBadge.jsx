@@ -11,6 +11,8 @@ const STATUSES = {
     // Usuarios
     active: { label: 'Activo', className: GREEN },
     inactive: { label: 'Inactivo', className: GRAY },
+    visible: { label: 'Visible', className: GREEN },
+    hidden: { label: 'Oculto', className: GRAY },
     // Membresías
     VIGENTE: { label: 'Vigente', className: GREEN },
     POR_VENCER: { label: 'Por vencer', className: AMBER },

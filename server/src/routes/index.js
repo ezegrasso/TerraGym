@@ -7,6 +7,7 @@ import trainersRoutes from './trainers.routes.js'
 import membershipPlansRoutes from './membershipPlans.routes.js'
 import membershipsRoutes from './memberships.routes.js'
 import paymentsRoutes from './payments.routes.js'
+import exercisesRoutes from './exercises.routes.js'
 
 const router = Router()
 
@@ -25,4 +26,5 @@ router.use('/trainers', trainersRoutes)
 router.use('/membership-plans', membershipPlansRoutes)
 router.use('/memberships', membershipsRoutes)
 router.use('/payments', paymentsRoutes)
+router.use('/exercises', exercisesRoutes)
 export default router
