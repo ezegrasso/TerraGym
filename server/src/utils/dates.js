@@ -51,3 +51,9 @@ export function membershipEnd(startDate, months) {
     return addDays(addMonths(startDate, months), -1)
 }
 
+// Lunes de la semana a la que pertenece la fecha ('YYYY-MM-DD')
+export function weekStart(dateStr) {
+    const { y, m, d } = parse(dateStr)
+    const dayOfWeek = new Date(Date.UTC(y, m - 1, d)).getUTCDay() // 0 = domingo
+    return addDays(dateStr, -((dayOfWeek + 6) % 7))
+}

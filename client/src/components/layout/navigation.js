@@ -1,8 +1,9 @@
-import { CreditCard, IdCard, LayoutDashboard, Receipt, Tags, UserCog, Users, Dumbbell, ClipboardList, ClipboardCheck } from 'lucide-react'
+import { CreditCard, IdCard, LayoutDashboard, Receipt, Tags, UserCog, Users, Dumbbell, ClipboardList, ClipboardCheck, CalendarCheck, UserCheck } from 'lucide-react'
 
 export const NAV_BY_ROLE = {
     ADMIN: [
         { label: 'Inicio', to: '/admin', icon: LayoutDashboard },
+        { label: 'Recepción', to: '/recepcion', icon: UserCheck },
         { label: 'Socios', to: '/admin/socios', icon: Users },
         { label: 'Profesores', to: '/admin/profesores', icon: UserCog },
         { label: 'Membresías', to: '/admin/membresias', icon: CreditCard },
@@ -11,12 +12,14 @@ export const NAV_BY_ROLE = {
         { label: 'Ejercicios', to: '/ejercicios', icon: Dumbbell },
         { label: 'Plantillas', to: '/plantillas', icon: ClipboardList },
         { label: 'Socios y rutinas', to: '/socios-rutinas', icon: ClipboardCheck },
+        { label: 'Asistencias', to: '/asistencias', icon: CalendarCheck },
     ],
-    PROFESOR: [{ label: 'Inicio', to: '/profesor', icon: LayoutDashboard }, { label: 'Ejercicios', to: '/ejercicios', icon: Dumbbell, label: 'Plantillas', to: '/plantillas', icon: ClipboardList }, { label: 'Socios y rutinas', to: '/socios-rutinas', icon: ClipboardCheck }],
+    PROFESOR: [{ label: 'Inicio', to: '/profesor', icon: LayoutDashboard }, { label: 'Ejercicios', to: '/ejercicios', icon: Dumbbell, label: 'Plantillas', to: '/plantillas', icon: ClipboardList }, { label: 'Socios y rutinas', to: '/socios-rutinas', icon: ClipboardCheck }, { label: 'Asistencias', to: '/asistencias', icon: CalendarCheck }, { label: 'Recepción', to: '/recepcion', icon: UserCheck }],
 
     USUARIO: [
         { label: 'Inicio', to: '/socio', icon: LayoutDashboard },
         { label: 'Mi membresía', to: '/socio/membresia', icon: IdCard },
         { label: 'Mi rutina', to: '/socio/rutina', icon: Dumbbell },
+        { label: 'Mis asistencias', to: '/socio/asistencias', icon: CalendarCheck },
     ],
 }

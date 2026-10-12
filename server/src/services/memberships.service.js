@@ -141,7 +141,14 @@ export async function listForMember(userId) {
     const items = await select('WHERE t.user_id = :userId', { userId }, 'ORDER BY t.start_date DESC LIMIT 24')
     return withPayments(items)
 }
-
+// Membresía "actual" de varios socios a la vez: Map(userId → membresía)
+export async function currentForMembers(userIds) {
+    const map = new Map()
+    if (!userIds.length) return map
+    const items = await select('WHERE t.user_id IN (:ids)', { ids: userIds }, '', source(true))
+    for (const item of items) map.set(item.userId, item)
+    return map
+}
 export async function create({ userId, planId, payment, confirmRenewal }, actingUserId) {
     const conn = await pool.getConnection()
     try {

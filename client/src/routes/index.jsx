@@ -20,6 +20,9 @@ import TemplatesPage from '@/pages/TemplatesPage'
 import MemberPlansPage from '@/pages/MemberPlansPage'
 import PlanEditorPage from '@/pages/PlanEditorPage'
 import MyPlanPage from '@/pages/member/MyPlanPage'
+import AttendancesPage from '@/pages/AttendancesPage'
+import ReceptionPage from '@/pages/ReceptionPage'
+import MyAttendancesPage from '@/pages/member/MyAttendancesPage'
 
 
 
@@ -56,6 +59,7 @@ export default function AppRoutes() {
                         <Route path="/socio" element={<HomePage />} />
                         <Route path="/socio/membresia" element={<MyMembershipPage />} />
                         <Route path="/socio/rutina" element={<MyPlanPage />} />
+                        <Route path="/socio/asistencias" element={<MyAttendancesPage />} />
                     </Route>
                     <Route element={<RoleRoute roles={[ROLES.ADMIN, ROLES.PROFESOR]} />}>
                         <Route path="/ejercicios" element={<ExercisesPage />} />
@@ -66,6 +70,8 @@ export default function AppRoutes() {
                         <Route path="/socios-rutinas/rutina/:id" element={<PlanEditorPage />} />
                         <Route path="/socios-rutinas/:memberId/nueva" element={<PlanEditorPage />} />
                         <Route path="/socios-rutinas/:memberId/rutina/:id" element={<PlanEditorPage />} />
+                        <Route path="/recepcion" element={<ReceptionPage />} />
+                        <Route path="/asistencias" element={<AttendancesPage />} />
                     </Route>
                 </Route>
 

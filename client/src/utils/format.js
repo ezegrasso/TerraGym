@@ -13,3 +13,5 @@ export function formatDate(value) {
     const [y, m, d] = value.slice(0, 10).split('-')
     return `${d}/${m}/${y}`
 }
+// 'YYYY-MM-DD HH:mm:ss' → 'HH:mm'
+export const formatTime = (value) => (value ? value.slice(11, 16) : '—')
