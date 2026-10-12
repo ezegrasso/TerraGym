@@ -236,3 +236,15 @@ export async function cancel(id) {
     await pool.query("UPDATE memberships SET status = 'CANCELADA' WHERE id = :id", { id })
     return getById(id)
 }
+// Consultas sobre "la membresía actual de cada socio" (las usa notifications.service)
+export async function queryCurrent(whereSql, params, tail = '') {
+    return select(whereSql, params, tail, source(true))
+}
+
+export async function countCurrent(whereSql, params) {
+    const [[{ total }]] = await pool.query(
+        `SELECT COUNT(*) AS total FROM ${source(true)} ${whereSql}`,
+        { today: todayAR(), ...params },
+    )
+    return total
+}

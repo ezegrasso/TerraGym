@@ -8,7 +8,8 @@
     "migrate": "node src/scripts/migrate.js",
     "seed": "node src/scripts/seed.js",
     "seed:exercises": "node src/scripts/seedExercises.js",
-    "test:attendance": "node src/scripts/testAttendance.js"
+    "test:attendance": "node src/scripts/testAttendance.js",
+    "test:notifications": "node src/scripts/testNotifications.js"
   },
   "keywords": [],
   "author": "",

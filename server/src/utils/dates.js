@@ -57,3 +57,9 @@ export function weekStart(dateStr) {
     const dayOfWeek = new Date(Date.UTC(y, m - 1, d)).getUTCDay() // 0 = domingo
     return addDays(dateStr, -((dayOfWeek + 6) % 7))
 }
+// Días entre dos fechas 'YYYY-MM-DD' (positivo si "to" es posterior a "from")
+export function daysBetween(fromStr, toStr) {
+    const a = parse(fromStr)
+    const b = parse(toStr)
+    return Math.round((Date.UTC(b.y, b.m - 1, b.d) - Date.UTC(a.y, a.m - 1, a.d)) / 86400000)
+}
