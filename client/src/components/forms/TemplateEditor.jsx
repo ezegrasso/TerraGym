@@ -24,6 +24,8 @@ import ExerciseFormSheet from './ExerciseFormSheet'
 import ExercisePicker from './ExercisePicker'
 import FormField from './FormField'
 import TemplateExerciseRow from './TemplateExerciseRow'
+import { usePlanMutations } from '@/hooks/useTrainingPlans'
+
 
 const MAX_DAYS = 7
 
@@ -95,10 +97,12 @@ function DayPanel({ control, register, errors, dayIndex }) {
     )
 }
 
-export default function TemplateEditor({ template }) {
+export default function TemplateEditor({ template, kind = 'template', memberId, backTo = '/plantillas' }) {
     const navigate = useNavigate()
     const isEdit = !!template
     const { create, update } = useTemplateMutations()
+    const planMutations = usePlanMutations()
+    const isPlan = kind === 'plan'
     const [active, setActive] = useState(0)
     const [dayToRemove, setDayToRemove] = useState(null)
 
@@ -141,17 +145,25 @@ export default function TemplateEditor({ template }) {
     async function onSubmit(values) {
         const payload = toPayload(values)
         try {
-            if (isEdit) {
+            if (isPlan) {
+                if (isEdit) {
+                    await planMutations.update.mutateAsync({
+                        id: template.id,
+                        data: { ...payload, expectedRevision: template.revision },
+                    })
+                } else {
+                    await planMutations.create.mutateAsync({ ...payload, memberId })
+                }
+            } else if (isEdit) {
                 await update.mutateAsync({
                     id: template.id,
                     data: { ...payload, expectedRevision: template.revision },
                 })
-                toast.success('Plantilla guardada')
             } else {
                 await create.mutateAsync(payload)
-                toast.success('Plantilla creada')
             }
-            navigate('/plantillas')
+            toast.success(isEdit ? 'Cambios guardados' : 'Creada correctamente')
+            navigate(backTo)
         } catch (error) {
             toast.error(getErrorMessage(error), { duration: 10000 })
         }
@@ -167,19 +179,31 @@ export default function TemplateEditor({ template }) {
     return (
         <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate>
             <PageHeader
-                title={isEdit ? 'Editar plantilla' : 'Nueva plantilla'}
+                title={
+                    isPlan
+                        ? isEdit
+                            ? `Rutina de ${template.member.firstName} ${template.member.lastName}`
+                            : 'Nueva rutina'
+                        : isEdit
+                            ? 'Editar plantilla'
+                            : 'Nueva plantilla'
+                }
                 description={
-                    isEdit
-                        ? `Creada por ${template.createdBy.firstName} ${template.createdBy.lastName}. Cualquier profesor puede editarla.`
-                        : 'Armala una vez y asignala a todos los socios que quieras.'
+                    isPlan
+                        ? isEdit
+                            ? 'Los cambios afectan solo a este socio, no a la plantilla de origen.'
+                            : 'Armada desde cero para este socio. Al guardar reemplaza su rutina activa.'
+                        : isEdit
+                            ? `Creada por ${template.createdBy.firstName} ${template.createdBy.lastName}. Cualquier profesor puede editarla.`
+                            : 'Armala una vez y asignala a todos los socios que quieras.'
                 }
                 actions={
                     <>
-                        <Button type="button" variant="outline" onClick={() => navigate('/plantillas')} disabled={isSubmitting}>
+                        <Button type="button" variant="outline" onClick={() => navigate(backTo)} disabled={isSubmitting}>
                             Cancelar
                         </Button>
                         <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? 'Guardando...' : 'Guardar plantilla'}
+                            {isSubmitting ? 'Guardando...' : isPlan ? 'Guardar rutina' : 'Guardar plantilla'}
                         </Button>
                     </>
                 }

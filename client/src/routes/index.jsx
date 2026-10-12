@@ -17,6 +17,11 @@ import MyMembershipPage from '@/pages/member/MyMembershipPage'
 import ExercisesPage from '@/pages/ExercisesPage'
 import TemplateEditorPage from '@/pages/TemplateEditorPage'
 import TemplatesPage from '@/pages/TemplatesPage'
+import MemberPlansPage from '@/pages/MemberPlansPage'
+import PlanEditorPage from '@/pages/PlanEditorPage'
+import MyPlanPage from '@/pages/member/MyPlanPage'
+
+
 
 // "/" manda a cada usuario a su inicio, o al login si no hay sesión
 function RootRedirect() {
@@ -50,12 +55,17 @@ export default function AppRoutes() {
                     <Route element={<RoleRoute roles={[ROLES.USUARIO]} />}>
                         <Route path="/socio" element={<HomePage />} />
                         <Route path="/socio/membresia" element={<MyMembershipPage />} />
+                        <Route path="/socio/rutina" element={<MyPlanPage />} />
                     </Route>
                     <Route element={<RoleRoute roles={[ROLES.ADMIN, ROLES.PROFESOR]} />}>
                         <Route path="/ejercicios" element={<ExercisesPage />} />
                         <Route path="/plantillas" element={<TemplatesPage />} />
                         <Route path="/plantillas/nueva" element={<TemplateEditorPage />} />
                         <Route path="/plantillas/:id" element={<TemplateEditorPage />} />
+                        <Route path="/socios-rutinas" element={<MemberPlansPage />} />
+                        <Route path="/socios-rutinas/rutina/:id" element={<PlanEditorPage />} />
+                        <Route path="/socios-rutinas/:memberId/nueva" element={<PlanEditorPage />} />
+                        <Route path="/socios-rutinas/:memberId/rutina/:id" element={<PlanEditorPage />} />
                     </Route>
                 </Route>
 
