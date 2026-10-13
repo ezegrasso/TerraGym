@@ -25,6 +25,7 @@ import ExercisePicker from './ExercisePicker'
 import FormField from './FormField'
 import TemplateExerciseRow from './TemplateExerciseRow'
 import { usePlanMutations } from '@/hooks/useTrainingPlans'
+import { useUnsaved } from '@/contexts/UnsavedContext'
 
 
 const MAX_DAYS = 7
@@ -117,13 +118,18 @@ export default function TemplateEditor({ template, kind = 'template', memberId, 
     const { fields: days, append, insert, remove } = useFieldArray({ control, name: 'days' })
     const watchedDays = useWatch({ control, name: 'days' })
 
-    // Aviso del navegador si intenta cerrar la pestaña con cambios sin guardar
+    const { markDirty } = useUnsaved()
+
     useEffect(() => {
+        markDirty(isDirty)
         if (!isDirty) return
         const warn = (e) => e.preventDefault()
         window.addEventListener('beforeunload', warn)
         return () => window.removeEventListener('beforeunload', warn)
-    }, [isDirty])
+    }, [isDirty, markDirty])
+
+    // Al salir del editor, el estado vuelve a limpio
+    useEffect(() => () => markDirty(false), [markDirty])
 
     function addDay() {
         append(emptyDay(`Día ${days.length + 1}`))
@@ -163,6 +169,7 @@ export default function TemplateEditor({ template, kind = 'template', memberId, 
                 await create.mutateAsync(payload)
             }
             toast.success(isEdit ? 'Cambios guardados' : 'Creada correctamente')
+            markDirty(false)
             navigate(backTo)
         } catch (error) {
             toast.error(getErrorMessage(error), { duration: 10000 })
@@ -273,13 +280,17 @@ export default function TemplateEditor({ template, kind = 'template', memberId, 
             </Tabs>
 
             <ConfirmDialog
-                open={dayToRemove !== null}
-                onOpenChange={(open) => !open && setDayToRemove(null)}
-                title="¿Eliminar este día?"
-                description="Se quitan el día y todos sus ejercicios de la plantilla. Se aplica cuando guardes."
-                confirmLabel="Eliminar día"
+                open={!!pendingTo}
+                onOpenChange={(open) => !open && setPendingTo(null)}
+                title="Tenés cambios sin guardar"
+                description="Si salís ahora, los cambios de esta pantalla se pierden."
+                confirmLabel="Salir sin guardar"
                 destructive
-                onConfirm={confirmRemoveDay}
+                onConfirm={() => {
+                    markDirty(false)
+                    navigate(pendingTo)
+                    setPendingTo(null)
+                }}
             />
         </form>
     )

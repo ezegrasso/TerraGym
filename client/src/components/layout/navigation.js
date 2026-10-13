@@ -25,3 +25,12 @@ export const NAV_BY_ROLE = {
         { label: 'Mis asistencias', to: '/socio/asistencias', icon: CalendarCheck },
     ],
 }
+export function titleFor(pathname) {
+    const all = Object.values(NAV_BY_ROLE).flat()
+    // El link más específico que coincida con el inicio de la ruta
+    const match = all
+        .filter((i) => pathname === i.to || pathname.startsWith(`${i.to}/`))
+        .sort((a, b) => b.to.length - a.to.length)[0]
+    if (pathname === '/perfil') return 'Mi perfil'
+    return match?.label ?? ''
+}

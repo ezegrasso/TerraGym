@@ -28,6 +28,7 @@ import AnnouncementsPage from '@/pages/admin/AnnouncementsPage'
 import AdminDashboard from '@/pages/admin/AdminDashboard'
 import TrainerDashboard from '@/pages/TrainerDashboard'
 import MemberDashboard from '@/pages/member/MemberDashboard'
+import ProfilePage from '@/pages/ProfilePage'
 
 
 // "/" manda a cada usuario a su inicio, o al login si no hay sesión
@@ -46,6 +47,7 @@ export default function AppRoutes() {
 
                 <Route element={<AppLayout />}>
                     <Route path="/" element={<RootRedirect />} />
+                    <Route path="/perfil" element={<ProfilePage />} />
 
                     <Route element={<RoleRoute roles={[ROLES.ADMIN]} />}>
                         <Route path="/admin" element={<AdminDashboard />} />

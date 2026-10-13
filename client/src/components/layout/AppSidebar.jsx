@@ -20,10 +20,15 @@ import {
 import { useAuth } from '@/hooks/useAuth'
 import { ROLE_LABELS } from '@/utils/roles'
 import { NAV_BY_ROLE } from './navigation'
+import { useState } from 'react'
+import ConfirmDialog from '@/components/shared/ConfirmDialog'
+import { useUnsaved } from '@/contexts/UnsavedContext'
 
 export default function AppSidebar() {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
+    const { dirty, markDirty } = useUnsaved()
+    const [pendingTo, setPendingTo] = useState(null)
     const items = NAV_BY_ROLE[user.role] ?? []
 
     async function handleLogout() {
@@ -48,7 +53,16 @@ export default function AppSidebar() {
                         <SidebarMenu>
                             {items.map((item) => (
                                 <SidebarMenuItem key={item.to}>
-                                    <NavLink to={item.to} end>
+                                    <NavLink
+                                        to={item.to}
+                                        end
+                                        onClick={(e) => {
+                                            if (dirty) {
+                                                e.preventDefault()
+                                                setPendingTo(item.to)
+                                            }
+                                        }}
+                                    >
                                         {({ isActive }) => (
                                             <SidebarMenuButton asChild isActive={isActive}>
                                                 <span>
@@ -83,6 +97,10 @@ export default function AppSidebar() {
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent side="top" align="start" className="w-56">
+                                <DropdownMenuItem onSelect={() => navigate('/perfil')}>
+                                    <UserRound aria-hidden="true" />
+                                    Mi perfil
+                                </DropdownMenuItem>
                                 <DropdownMenuItem onSelect={handleLogout}>
                                     <LogOut aria-hidden="true" />
                                     Cerrar sesión
