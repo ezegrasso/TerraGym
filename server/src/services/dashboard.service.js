@@ -21,7 +21,7 @@ export async function admin() {
         [revenueRows],
         [dailyRows],
         [hourRows],
-        [planRows],
+        planRows,
         statusCounts,
         upcoming,
     ] = await Promise.all([

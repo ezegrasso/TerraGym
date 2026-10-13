@@ -25,6 +25,9 @@ import ReceptionPage from '@/pages/ReceptionPage'
 import MyAttendancesPage from '@/pages/member/MyAttendancesPage'
 import ExpirationsPage from '@/pages/admin/ExpirationsPage'
 import AnnouncementsPage from '@/pages/admin/AnnouncementsPage'
+import AdminDashboard from '@/pages/admin/AdminDashboard'
+import TrainerDashboard from '@/pages/TrainerDashboard'
+import MemberDashboard from '@/pages/member/MemberDashboard'
 
 
 // "/" manda a cada usuario a su inicio, o al login si no hay sesión
@@ -45,7 +48,7 @@ export default function AppRoutes() {
                     <Route path="/" element={<RootRedirect />} />
 
                     <Route element={<RoleRoute roles={[ROLES.ADMIN]} />}>
-                        <Route path="/admin" element={<HomePage />} />
+                        <Route path="/admin" element={<AdminDashboard />} />
                         <Route path="/admin/socios" element={<MembersPage />} />
                         <Route path="/admin/profesores" element={<TrainersPage />} />
                         <Route path="/admin/membresias" element={<MembershipsPage />} />
@@ -55,10 +58,10 @@ export default function AppRoutes() {
                         <Route path="/admin/avisos" element={<AnnouncementsPage />} />
                     </Route>
                     <Route element={<RoleRoute roles={[ROLES.PROFESOR]} />}>
-                        <Route path="/profesor" element={<HomePage />} />
+                        <Route path="/profesor" element={<TrainerDashboard />} />
                     </Route>
                     <Route element={<RoleRoute roles={[ROLES.USUARIO]} />}>
-                        <Route path="/socio" element={<HomePage />} />
+                        <Route path="/socio" element={<MemberDashboard />} />
                         <Route path="/socio/membresia" element={<MyMembershipPage />} />
                         <Route path="/socio/rutina" element={<MyPlanPage />} />
                         <Route path="/socio/asistencias" element={<MyAttendancesPage />} />
