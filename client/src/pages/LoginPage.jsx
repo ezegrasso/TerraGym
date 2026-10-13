@@ -2,17 +2,17 @@ import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { Dumbbell } from 'lucide-react'
 import { toast } from 'sonner'
+import loginBg from '@/assets/login-bg.webp'
 import PasswordInput from '@/components/shared/PasswordInput'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/hooks/useAuth'
 import { getErrorMessage } from '@/services/api'
 import { HOME_BY_ROLE } from '@/utils/roles'
+
 
 const schema = z.object({
     email: z.string().trim().min(1, 'Ingresá tu email').email('El email no es válido'),
@@ -34,7 +34,6 @@ export default function LoginPage() {
         defaultValues: { email: '', password: '', remember: false },
     })
 
-    // Si ya hay sesión, no tiene sentido mostrar el login
     if (user) return <Navigate to={HOME_BY_ROLE[user.role]} replace />
 
     async function onSubmit(values) {
@@ -51,17 +50,30 @@ export default function LoginPage() {
     }
 
     return (
-        <main className="grid min-h-screen place-items-center bg-muted/40 p-4">
-            <Card className="w-full max-w-sm">
-                <CardHeader className="text-center">
-                    <div className="mx-auto mb-2 grid size-12 place-items-center rounded-xl bg-primary text-primary-foreground">
-                        <Dumbbell className="size-6" aria-hidden="true" />
+        // "dark" fuerza el tema oscuro solo en esta pantalla, que es la de la marca
+        <main className="dark relative grid h-dvh grid-rows-1 overflow-hidden bg-background text-foreground lg:grid-cols-2">
+            {/* Celular: foto fija arriba. Escritorio: panel lateral */}
+            <div className="absolute inset-x-0 top-0 h-[39%] lg:relative lg:h-auto">
+                <img
+                    src={loginBg}
+                    alt="TerraGym: gimnasio con rack de pesas y mancuernas. Entrená, superate, avanzá."
+                    className="absolute inset-0 size-full object-cover object-[center_40%]"
+                />
+                <div
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background lg:bg-gradient-to-r lg:to-background"
+                />
+            </div>
+
+            <section className="relative flex overflow-y-auto px-5 pb-6 pt-[10dvh] lg:p-10">
+                <div className="m-auto w-full max-w-sm rounded-2xl border bg-card/80 p-6 shadow-lg backdrop-blur motion-safe:animate-fade-up lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none">
+                    <div className="text-center lg:text-left">
+                        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Ingresá a tu cuenta</h1>
+                        <p className="mt-1 text-sm text-muted-foreground">Entrená, superate, avanzá.</p>
                     </div>
-                    <CardTitle className="text-2xl">TerraGym</CardTitle>
-                    <CardDescription>Ingresá con tu cuenta</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+
+
+                    <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4" noValidate>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <Input
@@ -103,7 +115,7 @@ export default function LoginPage() {
                                     <Checkbox
                                         id="remember"
                                         checked={field.value}
-                                        onCheckedChange={(checked) => field.onChange(checked === true)}
+                                        onChange={(checked) => field.onChange(checked === true)}
                                         aria-describedby="remember-hint"
                                         className="mt-0.5"
                                     />
@@ -119,12 +131,12 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
                             {isSubmitting ? 'Ingresando...' : 'Ingresar'}
                         </Button>
                     </form>
-                </CardContent>
-            </Card>
+                </div>
+            </section>
         </main>
     )
 }
