@@ -13,6 +13,7 @@ import trainingPlansRoutes from './trainingPlans.routes.js'
 import attendancesRoutes from './attendances.routes.js'
 import notificationsRoutes from './notifications.routes.js'
 import announcementsRoutes from './announcements.routes.js'
+import dashboardRoutes from './dashboard.routes.js'
 
 const router = Router()
 
@@ -37,4 +38,5 @@ router.use('/training-plans', trainingPlansRoutes)
 router.use('/attendances', attendancesRoutes)
 router.use('/notifications', notificationsRoutes)
 router.use('/announcements', announcementsRoutes)
+router.use('/dashboard', dashboardRoutes)
 export default router

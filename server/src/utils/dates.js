@@ -63,3 +63,13 @@ export function daysBetween(fromStr, toStr) {
     const b = parse(toStr)
     return Math.round((Date.UTC(b.y, b.m - 1, b.d) - Date.UTC(a.y, a.m - 1, a.d)) / 86400000)
 }
+// Lista de los últimos n días terminando en "endStr", ordenados de menor a mayor
+export function lastDays(endStr, n) {
+    return Array.from({ length: n }, (_, i) => addDays(endStr, i - (n - 1)))
+}
+
+// Lista de los últimos n meses ('YYYY-MM') terminando en el mes de "endStr"
+export function lastMonths(endStr, n) {
+    const first = `${endStr.slice(0, 7)}-01`
+    return Array.from({ length: n }, (_, i) => addMonths(first, i - (n - 1)).slice(0, 7))
+}
