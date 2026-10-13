@@ -1,4 +1,4 @@
-import { CreditCard, IdCard, LayoutDashboard, Receipt, Tags, UserCog, Users, Dumbbell, ClipboardList, ClipboardCheck, CalendarCheck, UserCheck, BellRing } from 'lucide-react'
+import { CreditCard, IdCard, LayoutDashboard, Receipt, Tags, UserCog, Users, Dumbbell, ClipboardList, ClipboardCheck, CalendarCheck, UserCheck, BellRing, Megaphone } from 'lucide-react'
 
 export const NAV_BY_ROLE = {
     ADMIN: [
@@ -8,6 +8,7 @@ export const NAV_BY_ROLE = {
         { label: 'Profesores', to: '/admin/profesores', icon: UserCog },
         { label: 'Membresías', to: '/admin/membresias', icon: CreditCard },
         { label: 'Vencimientos', to: '/admin/vencimientos', icon: BellRing },
+        { label: 'Avisos', to: '/admin/avisos', icon: Megaphone },
         { label: 'Pagos', to: '/admin/pagos', icon: Receipt },
         { label: 'Planes', to: '/admin/planes', icon: Tags },
         { label: 'Ejercicios', to: '/ejercicios', icon: Dumbbell },

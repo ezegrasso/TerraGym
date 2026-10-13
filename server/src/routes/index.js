@@ -12,6 +12,7 @@ import trainingTemplatesRoutes from './trainingTemplates.routes.js'
 import trainingPlansRoutes from './trainingPlans.routes.js'
 import attendancesRoutes from './attendances.routes.js'
 import notificationsRoutes from './notifications.routes.js'
+import announcementsRoutes from './announcements.routes.js'
 
 const router = Router()
 
@@ -35,4 +36,5 @@ router.use('/training-templates', trainingTemplatesRoutes)
 router.use('/training-plans', trainingPlansRoutes)
 router.use('/attendances', attendancesRoutes)
 router.use('/notifications', notificationsRoutes)
+router.use('/announcements', announcementsRoutes)
 export default router

@@ -9,7 +9,8 @@
     "seed": "node src/scripts/seed.js",
     "seed:exercises": "node src/scripts/seedExercises.js",
     "test:attendance": "node src/scripts/testAttendance.js",
-    "test:notifications": "node src/scripts/testNotifications.js"
+    "test:notifications": "node src/scripts/testNotifications.js",
+    "test:announcements": "node src/scripts/testAnnouncements.js"
   },
   "keywords": [],
   "author": "",

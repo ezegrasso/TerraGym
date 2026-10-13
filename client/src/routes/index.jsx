@@ -24,6 +24,7 @@ import AttendancesPage from '@/pages/AttendancesPage'
 import ReceptionPage from '@/pages/ReceptionPage'
 import MyAttendancesPage from '@/pages/member/MyAttendancesPage'
 import ExpirationsPage from '@/pages/admin/ExpirationsPage'
+import AnnouncementsPage from '@/pages/admin/AnnouncementsPage'
 
 
 // "/" manda a cada usuario a su inicio, o al login si no hay sesión
@@ -51,7 +52,7 @@ export default function AppRoutes() {
                         <Route path="/admin/planes" element={<PlansPage />} />
                         <Route path="/admin/pagos" element={<PaymentsPage />} />
                         <Route path="/admin/vencimientos" element={<ExpirationsPage />} />
-
+                        <Route path="/admin/avisos" element={<AnnouncementsPage />} />
                     </Route>
                     <Route element={<RoleRoute roles={[ROLES.PROFESOR]} />}>
                         <Route path="/profesor" element={<HomePage />} />
