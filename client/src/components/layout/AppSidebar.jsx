@@ -23,6 +23,7 @@ import { NAV_BY_ROLE } from './navigation'
 import { useState } from 'react'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import { useUnsaved } from '@/contexts/UnsavedContext'
+import { UserRound } from 'lucide-react'
 
 export default function AppSidebar() {
     const { user, logout } = useAuth()
