@@ -1,10 +1,14 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { ChevronsUpDown, Dumbbell, LogOut } from 'lucide-react'
+import { ChevronsUpDown, Dumbbell, LogOut, Monitor, Moon, Sun } from 'lucide-react'
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
+    DropdownMenuLabel,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+    DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import {
     Sidebar,
@@ -24,11 +28,14 @@ import { useState } from 'react'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import { useUnsaved } from '@/contexts/UnsavedContext'
 import { UserRound } from 'lucide-react'
+import { useTheme } from '@/contexts/ThemeContext'
 
 export default function AppSidebar() {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
     const { dirty, markDirty } = useUnsaved()
+    const { theme, setTheme } = useTheme()
+
     const [pendingTo, setPendingTo] = useState(null)
     const items = NAV_BY_ROLE[user.role] ?? []
 
@@ -98,15 +105,41 @@ export default function AppSidebar() {
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent side="top" align="start" className="w-56">
+                                <DropdownMenuLabel>Tema</DropdownMenuLabel>
+
+                                <DropdownMenuRadioGroup
+                                    value={theme}
+                                    onValueChange={setTheme}
+                                >
+                                    <DropdownMenuRadioItem value="light">
+                                        <Sun aria-hidden="true" />
+                                        Claro
+                                    </DropdownMenuRadioItem>
+
+                                    <DropdownMenuRadioItem value="dark">
+                                        <Moon aria-hidden="true" />
+                                        Oscuro
+                                    </DropdownMenuRadioItem>
+
+                                    <DropdownMenuRadioItem value="system">
+                                        <Monitor aria-hidden="true" />
+                                        Automático
+                                    </DropdownMenuRadioItem>
+                                </DropdownMenuRadioGroup>
+
+                                <DropdownMenuSeparator />
+
                                 <DropdownMenuItem onSelect={() => navigate('/perfil')}>
                                     <UserRound aria-hidden="true" />
                                     Mi perfil
                                 </DropdownMenuItem>
+
                                 <DropdownMenuItem onSelect={handleLogout}>
                                     <LogOut aria-hidden="true" />
                                     Cerrar sesión
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
+
                         </DropdownMenu>
                     </SidebarMenuItem>
                 </SidebarMenu>

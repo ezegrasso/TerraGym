@@ -3,7 +3,10 @@ import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from '@/components/ui/sonner'
 import App from './App.jsx'
+import '@fontsource-variable/inter'
+import '@fontsource-variable/space-grotesk'
 import './index.css'
+
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },

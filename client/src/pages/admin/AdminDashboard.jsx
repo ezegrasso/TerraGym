@@ -77,10 +77,8 @@ export default function AdminDashboard() {
                     icon={AlertTriangle}
                     tone={cards.expired > 0 ? 'danger' : undefined}
                 />
-                <StatCard title="Cobrado este mes" value={formatCurrency(cards.collectedThisMonth)} icon={Coins} />
-                <StatCard
-                    title="Deuda pendiente"
-                    value={formatCurrency(cards.debt)}
+                <StatCard title="Cobrado este mes" value={cards.collectedThisMonth} format={formatCurrency} icon={Coins} />
+                <StatCard title="Deuda pendiente" value={cards.debt} format={formatCurrency}
                     hint="En membresías no canceladas"
                     icon={Wallet}
                     tone={cards.debt > 0 ? 'warning' : undefined}
