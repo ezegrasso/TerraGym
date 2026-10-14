@@ -29,6 +29,8 @@ import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import { useUnsaved } from '@/contexts/UnsavedContext'
 import { UserRound } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
+import Logo from '@/components/shared/Logo'
+
 
 export default function AppSidebar() {
     const { user, logout } = useAuth()
@@ -47,11 +49,8 @@ export default function AppSidebar() {
     return (
         <Sidebar>
             <SidebarHeader>
-                <div className="flex items-center gap-2 px-2 py-1.5">
-                    <div className="grid size-8 place-items-center rounded-md bg-primary text-primary-foreground">
-                        <Dumbbell className="size-4" aria-hidden="true" />
-                    </div>
-                    <span className="text-lg font-semibold tracking-tight">TerraGym</span>
+                <div className="px-2 py-1.5">
+                    <Logo />
                 </div>
             </SidebarHeader>
 

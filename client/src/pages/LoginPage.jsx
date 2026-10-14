@@ -1,4 +1,4 @@
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
@@ -6,7 +6,6 @@ import { toast } from 'sonner'
 import loginBg from '@/assets/login-bg.webp'
 import PasswordInput from '@/components/shared/PasswordInput'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/hooks/useAuth'
@@ -26,7 +25,6 @@ export default function LoginPage() {
     const location = useLocation()
     const {
         register,
-        control,
         handleSubmit,
         formState: { errors, isSubmitting },
     } = useForm({
@@ -108,18 +106,12 @@ export default function LoginPage() {
                         </div>
 
                         <div className="flex items-start gap-2">
-                            <Controller
-                                name="remember"
-                                control={control}
-                                render={({ field }) => (
-                                    <Checkbox
-                                        id="remember"
-                                        checked={field.value}
-                                        onChange={(checked) => field.onChange(checked === true)}
-                                        aria-describedby="remember-hint"
-                                        className="mt-0.5"
-                                    />
-                                )}
+                            <input
+                                id="remember"
+                                type="checkbox"
+                                aria-describedby="remember-hint"
+                                className="mt-0.5 size-4 shrink-0 cursor-pointer rounded accent-primary"
+                                {...register('remember')}
                             />
                             <div className="grid gap-1 leading-none">
                                 <Label htmlFor="remember" className="cursor-pointer">

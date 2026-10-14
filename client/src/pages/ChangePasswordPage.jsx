@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { getErrorMessage } from '@/services/api'
 import { authService } from '@/services/auth.service'
 import { HOME_BY_ROLE } from '@/utils/roles'
+import Logo from '@/components/shared/Logo'
 
 const schema = z
     .object({
@@ -70,9 +71,7 @@ export default function ChangePasswordPage() {
         <main className="grid min-h-screen place-items-center bg-muted/40 p-4">
             <Card className="w-full max-w-sm">
                 <CardHeader className="text-center">
-                    <div className="mx-auto mb-2 grid size-12 place-items-center rounded-xl bg-primary text-primary-foreground">
-                        <KeyRound className="size-6" aria-hidden="true" />
-                    </div>
+                    <Logo className="mx-auto mb-3 h-14 w-auto" />
                     <CardTitle className="text-2xl">Cambiá tu contraseña</CardTitle>
                     <CardDescription>
                         Por seguridad, tenés que elegir una contraseña nueva antes de continuar.
