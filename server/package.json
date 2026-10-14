@@ -11,7 +11,10 @@
     "test:attendance": "node src/scripts/testAttendance.js",
     "test:notifications": "node src/scripts/testNotifications.js",
     "test:announcements": "node src/scripts/testAnnouncements.js",
-    "test:dashboard": "node src/scripts/testDashboard.js"
+    "test:dashboard": "node src/scripts/testDashboard.js",
+    "engines": {
+      "node": ">=20"
+    }
   },
   "keywords": [],
   "author": "",

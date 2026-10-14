@@ -17,6 +17,7 @@ async function run() {
         password: env.DB_PASSWORD,
         database: env.DB_NAME,
         multipleStatements: true,
+        ssl: env.DB_SSL === 'true' ? { rejectUnauthorized: true } : undefined,
     })
 
     try {

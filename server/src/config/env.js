@@ -11,10 +11,11 @@ const schema = z.object({
     DB_PASSWORD: z.string(),
     DB_NAME: z.string().min(1),
     JWT_SECRET: z.string().min(32, 'JWT_SECRET debe tener al menos 32 caracteres'),
-    JWT_EXPIRES_IN: z.string().default('7d'),
     ADMIN_EMAIL: z.string().email().optional(),
     ADMIN_PASSWORD: z.string().min(4, 'ADMIN_PASSWORD debe tener al menos 4 caracteres').optional(),
     ADMIN_LAST_NAME: z.string().default('TerraGym'),
+    ADMIN_FIRST_NAME: z.string().default('TerraGym'),
+    DB_SSL: z.enum(['true', 'false']).default('false'),
 })
 
 const parsed = schema.safeParse(process.env)
