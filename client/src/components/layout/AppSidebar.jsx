@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { ChevronsUpDown, Dumbbell, LogOut, Monitor, Moon, Sun } from 'lucide-react'
+import { ChevronsUpDown, LogOut, Monitor, Moon, Sun } from 'lucide-react'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -36,9 +36,8 @@ export default function AppSidebar() {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
     const { dirty, markDirty } = useUnsaved()
-    const { theme, setTheme } = useTheme()
-
     const [pendingTo, setPendingTo] = useState(null)
+    const { theme, setTheme } = useTheme()
     const items = NAV_BY_ROLE[user.role] ?? []
 
     async function handleLogout() {
@@ -143,6 +142,20 @@ export default function AppSidebar() {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
+
+            <ConfirmDialog
+                open={!!pendingTo}
+                onOpenChange={(open) => !open && setPendingTo(null)}
+                title="Tenés cambios sin guardar"
+                description="Si salís ahora, los cambios de esta pantalla se pierden."
+                confirmLabel="Salir sin guardar"
+                destructive
+                onConfirm={() => {
+                    markDirty(false)
+                    navigate(pendingTo)
+                    setPendingTo(null)
+                }}
+            />
         </Sidebar>
     )
 }
