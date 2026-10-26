@@ -278,20 +278,6 @@ export default function TemplateEditor({ template, kind = 'template', memberId, 
                     </TabsContent>
                 ))}
             </Tabs>
-
-            <ConfirmDialog
-                open={!!pendingTo}
-                onOpenChange={(open) => !open && setPendingTo(null)}
-                title="Tenés cambios sin guardar"
-                description="Si salís ahora, los cambios de esta pantalla se pierden."
-                confirmLabel="Salir sin guardar"
-                destructive
-                onConfirm={() => {
-                    markDirty(false)
-                    navigate(pendingTo)
-                    setPendingTo(null)
-                }}
-            />
         </form>
     )
 }
