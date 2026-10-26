@@ -144,10 +144,9 @@ export default function TemplateEditor({ template, kind = 'template', memberId, 
 
     function confirmRemoveDay() {
         remove(dayToRemove)
-        setActive((a) => Math.max(0, Math.min(a, days.length - 2)))
+        setActive(0)
         setDayToRemove(null)
     }
-
     async function onSubmit(values) {
         const payload = toPayload(values)
         try {
@@ -184,100 +183,115 @@ export default function TemplateEditor({ template, kind = 'template', memberId, 
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate>
-            <PageHeader
-                title={
-                    isPlan
-                        ? isEdit
-                            ? `Rutina de ${template.member.firstName} ${template.member.lastName}`
-                            : 'Nueva rutina'
-                        : isEdit
-                            ? 'Editar plantilla'
-                            : 'Nueva plantilla'
-                }
-                description={
-                    isPlan
-                        ? isEdit
-                            ? 'Los cambios afectan solo a este socio, no a la plantilla de origen.'
-                            : 'Armada desde cero para este socio. Al guardar reemplaza su rutina activa.'
-                        : isEdit
-                            ? `Creada por ${template.createdBy.firstName} ${template.createdBy.lastName}. Cualquier profesor puede editarla.`
-                            : 'Armala una vez y asignala a todos los socios que quieras.'
-                }
-                actions={
-                    <>
-                        <Button type="button" variant="outline" onClick={() => navigate(backTo)} disabled={isSubmitting}>
-                            Cancelar
-                        </Button>
-                        <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? 'Guardando...' : isPlan ? 'Guardar rutina' : 'Guardar plantilla'}
-                        </Button>
-                    </>
-                }
-            />
+        <>
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate>
+                <PageHeader
+                    title={
+                        isPlan
+                            ? isEdit
+                                ? `Rutina de ${template.member.firstName} ${template.member.lastName}`
+                                : 'Nueva rutina'
+                            : isEdit
+                                ? 'Editar plantilla'
+                                : 'Nueva plantilla'
+                    }
+                    description={
+                        isPlan
+                            ? isEdit
+                                ? 'Los cambios afectan solo a este socio, no a la plantilla de origen.'
+                                : 'Armada desde cero para este socio. Al guardar reemplaza su rutina activa.'
+                            : isEdit
+                                ? `Creada por ${template.createdBy.firstName} ${template.createdBy.lastName}. Cualquier profesor puede editarla.`
+                                : 'Armala una vez y asignala a todos los socios que quieras.'
+                    }
+                    actions={
+                        <>
+                            <Button type="button" variant="outline" onClick={() => navigate(backTo)} disabled={isSubmitting}>
+                                Cancelar
+                            </Button>
+                            <Button type="submit" disabled={isSubmitting}>
+                                {isSubmitting ? 'Guardando...' : isPlan ? 'Guardar rutina' : 'Guardar plantilla'}
+                            </Button>
+                        </>
+                    }
+                />
 
-            <Card className="mb-6">
-                <CardContent className="grid gap-4 pt-6 md:grid-cols-2">
-                    <FormField id="name" label="Nombre" error={errors.name?.message}>
-                        {(p) => <Input autoComplete="off" placeholder="Ej: Fuerza 3 días" {...p} {...register('name')} />}
-                    </FormField>
-                    <FormField id="objective" label="Objetivo (opcional)" error={errors.objective?.message}>
-                        {(p) => (
-                            <Input autoComplete="off" placeholder="Ej: Ganar masa muscular" {...p} {...register('objective')} />
-                        )}
-                    </FormField>
-                    <div className="md:col-span-2">
-                        <FormField id="notes" label="Notas generales (opcional)" error={errors.notes?.message}>
-                            {(p) => <Textarea rows={3} {...p} {...register('notes')} />}
+                <Card className="mb-6">
+                    <CardContent className="grid gap-4 pt-6 md:grid-cols-2">
+                        <FormField id="name" label="Nombre" error={errors.name?.message}>
+                            {(p) => <Input autoComplete="off" placeholder="Ej: Fuerza 3 días" {...p} {...register('name')} />}
                         </FormField>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <Tabs value={String(active)} onValueChange={(v) => setActive(Number(v))}>
-                <div className="mb-4 flex flex-wrap items-center gap-2">
-                    <TabsList className="h-auto flex-wrap justify-start">
-                        {days.map((d, i) => (
-                            <TabsTrigger key={d.id} value={String(i)}>
-                                {watchedDays?.[i]?.name || `Día ${i + 1}`}
-                                {errors.days?.[i] && (
-                                    <span className="ml-1.5 size-2 rounded-full bg-destructive" role="img" aria-label="con errores" />
-                                )}
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-                    <Button type="button" variant="outline" size="sm" onClick={addDay} disabled={days.length >= MAX_DAYS}>
-                        <Plus aria-hidden="true" /> Agregar día
-                    </Button>
-                </div>
-
-                {days.map((d, i) => (
-                    <TabsContent key={d.id} value={String(i)} className="space-y-4">
-                        <div className="flex flex-wrap gap-2">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => copyDay(i)}
-                                disabled={days.length >= MAX_DAYS}
-                            >
-                                <Copy aria-hidden="true" /> Copiar este día
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setDayToRemove(i)}
-                                disabled={days.length <= 1}
-                                className="text-destructive"
-                            >
-                                <Trash2 aria-hidden="true" /> Eliminar este día
-                            </Button>
+                        <FormField id="objective" label="Objetivo (opcional)" error={errors.objective?.message}>
+                            {(p) => (
+                                <Input autoComplete="off" placeholder="Ej: Ganar masa muscular" {...p} {...register('objective')} />
+                            )}
+                        </FormField>
+                        <div className="md:col-span-2">
+                            <FormField id="notes" label="Notas generales (opcional)" error={errors.notes?.message}>
+                                {(p) => <Textarea rows={3} {...p} {...register('notes')} />}
+                            </FormField>
                         </div>
-                        <DayPanel control={control} register={register} errors={errors} dayIndex={i} />
-                    </TabsContent>
-                ))}
-            </Tabs>
-        </form>
+                    </CardContent>
+                </Card>
+
+                <Tabs value={String(active)} onValueChange={(v) => setActive(Number(v))}>
+                    <div className="mb-4 flex flex-wrap items-center gap-2">
+                        <TabsList className="h-auto flex-wrap justify-start">
+                            {days.map((d, i) => (
+                                <TabsTrigger key={d.id} value={String(i)}>
+                                    {watchedDays?.[i]?.name || `Día ${i + 1}`}
+                                    {errors.days?.[i] && (
+                                        <span className="ml-1.5 size-2 rounded-full bg-destructive" role="img" aria-label="con errores" />
+                                    )}
+                                </TabsTrigger>
+                            ))}
+                        </TabsList>
+                        <Button type="button" variant="outline" size="sm" onClick={addDay} disabled={days.length >= MAX_DAYS}>
+                            <Plus aria-hidden="true" /> Agregar día
+                        </Button>
+                    </div>
+
+                    {days.map((d, i) => (
+                        <TabsContent key={d.id} value={String(i)} className="space-y-4">
+                            <div className="flex flex-wrap gap-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => copyDay(i)}
+                                    disabled={days.length >= MAX_DAYS}
+                                >
+                                    <Copy aria-hidden="true" /> Copiar este día
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setDayToRemove(i)}
+                                    disabled={days.length <= 1}
+                                    className="text-destructive"
+                                >
+                                    <Trash2 aria-hidden="true" /> Eliminar este día
+                                </Button>
+                            </div>
+                            <DayPanel control={control} register={register} errors={errors} dayIndex={i} />
+                        </TabsContent>
+                    ))}
+                </Tabs>
+            </form>
+
+            <ConfirmDialog
+                open={dayToRemove !== null}
+                onOpenChange={(open) => !open && setDayToRemove(null)}
+                title="¿Eliminar este día?"
+                description="Se quitan el día y todos sus ejercicios de la plantilla. Se aplica cuando guardes."
+                confirmLabel="Eliminar día"
+                destructive
+                onConfirm={confirmRemoveDay}
+            />
+        </>
+
     )
+
+
 }
